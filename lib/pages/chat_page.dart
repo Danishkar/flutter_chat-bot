@@ -15,6 +15,7 @@ class _ChatPageState extends State<ChatPage> {
 
   final List _messages = [
     {'message': "Hello! How can I assist you today?", 'isBot': true},
+    {'message': "Hello! How can I assist you today?", 'isBot': false},
   ];
 
   void onPressed() {
@@ -75,28 +76,37 @@ class _ChatPageState extends State<ChatPage> {
       body: Column(
         children: [
           Expanded(
-              child: ListView.builder(
-                  padding: const EdgeInsets.all(10),
-                  itemCount: _messages.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: _messages.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Align(
+                  alignment: _messages[index]['isBot']
+                      ? Alignment.centerLeft
+                      : Alignment.centerRight,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.8,
+                    ),
+                    child: Container(
                       padding: const EdgeInsets.all(15),
                       margin: const EdgeInsets.all(5),
-                      width: 10,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: _messages[index]['isBot']
-                              ? const Color.fromARGB(255, 224, 224, 224)
-                              : Colors.blue[100]),
+                        borderRadius: BorderRadius.circular(12),
+                        color: _messages[index]['isBot']
+                            ? const Color.fromARGB(255, 224, 224, 224)
+                            : Colors.blue[100],
+                      ),
                       child: Text(
                         '${_messages[index]['message']}',
-                        textDirection: _messages[index]['isBot']
-                            ? TextDirection.ltr
-                            : TextDirection.rtl,
                         style: const TextStyle(fontSize: 15),
                       ),
-                    );
-                  })),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
           Row(
             children: [
               Expanded(
@@ -112,7 +122,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
-              IconButton(
+              IconButton.filledTonal(
                 onPressed: onPressed,
                 icon: const Icon(Icons.send),
                 padding: const EdgeInsets.all(10),
