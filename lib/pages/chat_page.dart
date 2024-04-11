@@ -13,7 +13,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final _controller = TextEditingController();
 
-  final List _entries = [
+  final List _messages = [
     {'message': "Hello! How can I assist you today?", 'isBot': true},
   ];
 
@@ -21,12 +21,21 @@ class _ChatPageState extends State<ChatPage> {
     var userMessage = _controller.text;
     if (userMessage != "") {
       setState(() {
-        _entries.add({'message': userMessage, 'isBot': false});
+        _messages.add({'message': userMessage, 'isBot': false});
         _controller.clear();
       });
       getChatCompletion(userMessage);
     } else {
-      print("no Message");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Center(child: Text("Enter a message")),
+        duration: const Duration(milliseconds: 900),
+        width: 150.0,
+        padding: const EdgeInsets.all(10.0),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ));
     }
   }
 
@@ -42,13 +51,12 @@ class _ChatPageState extends State<ChatPage> {
     );
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
-      print(responseData);
       setState(() {
-        _entries.add({'message': responseData["gptAnswer"], 'isBot': true});
+        _messages.add({'message': responseData["gptAnswer"], 'isBot': true});
       });
     } else {
       setState(() {
-        _entries.add({
+        _messages.add({
           'message': "An error occurred, please try again!!",
           'isBot': true
         });
@@ -69,7 +77,7 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
               child: ListView.builder(
                   padding: const EdgeInsets.all(10),
-                  itemCount: _entries.length,
+                  itemCount: _messages.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       padding: const EdgeInsets.all(15),
@@ -77,12 +85,12 @@ class _ChatPageState extends State<ChatPage> {
                       width: 10,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: _entries[index]['isBot']
+                          color: _messages[index]['isBot']
                               ? const Color.fromARGB(255, 224, 224, 224)
                               : Colors.blue[100]),
                       child: Text(
-                        '${_entries[index]['message']}',
-                        textDirection: _entries[index]['isBot']
+                        '${_messages[index]['message']}',
+                        textDirection: _messages[index]['isBot']
                             ? TextDirection.ltr
                             : TextDirection.rtl,
                         style: const TextStyle(fontSize: 15),
