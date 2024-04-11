@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -13,8 +14,7 @@ class _ChatPageState extends State<ChatPage> {
   final _controller = TextEditingController();
 
   final List _entries = [
-    {'message': "Hello, How can I help?", 'isBot': true},
-    {'message': "Hello", 'isBot': false},
+    {'message': "Hello! How can I assist you today?", 'isBot': true},
   ];
 
   void onPressed() {
@@ -24,8 +24,35 @@ class _ChatPageState extends State<ChatPage> {
         _entries.add({'message': userMessage, 'isBot': false});
         _controller.clear();
       });
+      getChatCompletion(userMessage);
     } else {
       print("no Message");
+    }
+  }
+
+  Future<void> getChatCompletion(String userMessage) async {
+    var response = await http.post(
+      Uri.parse(dotenv.env['CHAT_COMPLETION_URL']!),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'prompt': userMessage,
+      }),
+    );
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      print(responseData);
+      setState(() {
+        _entries.add({'message': responseData["gptAnswer"], 'isBot': true});
+      });
+    } else {
+      setState(() {
+        _entries.add({
+          'message': "An error occurred, please try again!!",
+          'isBot': true
+        });
+      });
     }
   }
 
