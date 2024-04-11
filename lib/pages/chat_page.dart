@@ -1,11 +1,32 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final _controller = TextEditingController();
+
+  final List _entries = [
+    {'message': "Hello, How can I help?", 'isBot': true},
+    {'message': "Hello", 'isBot': false},
+  ];
+
   void onPressed() {
-    print("Justt");
+    var userMessage = _controller.text;
+    if (userMessage != "") {
+      setState(() {
+        _entries.add({'message': userMessage, 'isBot': false});
+        _controller.clear();
+      });
+    } else {
+      print("no Message");
+    }
   }
 
   @override
@@ -18,15 +39,37 @@ class ChatPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Expanded(child: Container(child: const Text("Hello"))),
-          Container(
-              child: Row(
+          Expanded(
+              child: ListView.builder(
+                  padding: const EdgeInsets.all(10),
+                  itemCount: _entries.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      padding: const EdgeInsets.all(15),
+                      margin: const EdgeInsets.all(5),
+                      width: 10,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: _entries[index]['isBot']
+                              ? const Color.fromARGB(255, 224, 224, 224)
+                              : Colors.blue[100]),
+                      child: Text(
+                        '${_entries[index]['message']}',
+                        textDirection: _entries[index]['isBot']
+                            ? TextDirection.ltr
+                            : TextDirection.rtl,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    );
+                  })),
+          Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: SizedBox(
                   width: 100,
                   child: TextField(
-                    decoration: InputDecoration(
+                    controller: _controller,
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.chat),
                       hintText: 'Enter Your Message....',
                       filled: true,
@@ -40,7 +83,7 @@ class ChatPage extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
               )
             ],
-          ))
+          )
         ],
       ),
     );
