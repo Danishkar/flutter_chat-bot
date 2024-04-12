@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_bot/pages/chat_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_chat_bot/features/chat/screens/chat.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -10,11 +10,10 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: ChatPage(),
+      home: Chat(),
       debugShowCheckedModeBanner: false,
     );
   }
