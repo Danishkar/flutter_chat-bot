@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_bot/provider/message_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_chat_bot/features/chat/screens/chat.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -12,9 +14,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Chat(),
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => MessageProvider())],
+      child: const MaterialApp(
+        home: Chat(),
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
